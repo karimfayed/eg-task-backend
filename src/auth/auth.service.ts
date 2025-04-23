@@ -52,6 +52,17 @@ export class AuthService {
     return this.generateUserTokens(user._id);
   }
 
+  async refreshToken(refreshToken: string) {
+    const token = await this.RefreshTokenModel.findOneAndDelete({
+      token: refreshToken,
+      expiryDate: { $gte: new Date() },
+    });
+
+    if (!token) throw new UnauthorizedException('Refresh token is invalid');
+
+    return await this.generateUserTokens(token.userId);
+  }
+
   async generateUserTokens(userId) {
     const accessToken = this.jwtService.sign({ userId }, { expiresIn: '1h' });
     const refreshToken = uuidv4();
