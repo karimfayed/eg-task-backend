@@ -64,7 +64,7 @@ export class AuthService {
   }
 
   async generateUserTokens(userId) {
-    const accessToken = this.jwtService.sign({ userId }, { expiresIn: '1h' });
+    const accessToken = this.jwtService.sign({ userId }, { expiresIn: 10 });
     const refreshToken = uuidv4();
     await this.storeRefreshToken(refreshToken, userId);
     return {
@@ -77,11 +77,15 @@ export class AuthService {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 3);
 
-    const x = await this.RefreshTokenModel.create({
-      token,
-      userId,
-      expiryDate,
-    });
+    const x = await this.RefreshTokenModel.updateOne(
+      {
+        userId,
+      },
+      { $set: { expiryDate, token } },
+      {
+        upsert: true,
+      },
+    );
     console.log('x:', x);
   }
 }
