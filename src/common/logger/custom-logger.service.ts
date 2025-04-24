@@ -1,15 +1,15 @@
 // common/logger/custom-logger.service.ts
 import { Injectable, Logger } from '@nestjs/common';
-import { LoggerDto } from '../dtos/logger.dto';
+import { logErrorDto, logRequestDto } from '../dtos/logger.dto';
 
 @Injectable()
 export class CustomLogger extends Logger {
-  logRequest(data: LoggerDto) {
+  logRequest(data: logRequestDto) {
     const { context, duration, method, statusCode, url } = data;
     this.log(`[${context}] ${method} ${url} → ${statusCode} in ${duration}ms`);
   }
 
-  logError(data: LoggerDto) {
+  logError(data: logErrorDto) {
     const { context, error, method, statusCode, url } = data;
     this.error(`[${context}] ${method} ${url} → ${statusCode} - ${error}`);
   }

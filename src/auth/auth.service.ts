@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from './schemas/refresh-token.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from 'src/common/schemas/user.schema';
+import { ErrorMessages } from 'src/common/enums/error-messages.enum';
 
 @Injectable()
 export class AuthService {
@@ -21,33 +22,34 @@ export class AuthService {
     private RefreshTokenModel: Model<RefreshToken>,
     private jwtService: JwtService,
   ) {}
-  async signup(signupData: SignupDto) {
-    console.log('DD', signupData);
-    const emailInUse = await this.UserModel.findOne({
+  async signUp(signupData: SignupDto) {
+    const isEmailExists = await this.UserModel.findOne({
       email: signupData.email,
     });
 
-    if (emailInUse) throw new BadRequestException('Email already in use');
+    if (isEmailExists)
+      throw new BadRequestException(ErrorMessages.EMAIL_EXISTS);
 
     const hashedPassword = await bcrypt.hash(signupData.password, 10);
 
-    await this.UserModel.create({
+    const createdUser = await this.UserModel.create({
       name: signupData.name,
       email: signupData.email,
       password: hashedPassword,
     });
+    return createdUser;
   }
 
   async login(creds: LoginDto) {
-    console.log('FF', creds);
     const user = await this.UserModel.findOne({
       email: creds.email,
     });
 
-    if (!user) throw new UnauthorizedException('Wrong Credentials');
+    if (!user) throw new UnauthorizedException(ErrorMessages.INVALID_CREDS);
 
-    const passwordMatch = await bcrypt.compare(creds.password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException('Wrong Credentials');
+    const isPasswordValid = await bcrypt.compare(creds.password, user.password);
+    if (!isPasswordValid)
+      throw new UnauthorizedException(ErrorMessages.INVALID_CREDS);
 
     return this.generateUserTokens(user._id);
   }
@@ -58,13 +60,14 @@ export class AuthService {
       expiryDate: { $gte: new Date() },
     });
 
-    if (!token) throw new UnauthorizedException('Refresh token is invalid');
+    if (!token)
+      throw new UnauthorizedException(ErrorMessages.INVALID_REFRESH_TOKEN);
 
     return await this.generateUserTokens(token.userId);
   }
 
   async generateUserTokens(userId) {
-    const accessToken = this.jwtService.sign({ userId }, { expiresIn: 10 });
+    const accessToken = this.jwtService.sign({ userId }, { expiresIn: 30 });
     const refreshToken = uuidv4();
     await this.storeRefreshToken(refreshToken, userId);
     return {
@@ -77,7 +80,7 @@ export class AuthService {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 3);
 
-    const x = await this.RefreshTokenModel.updateOne(
+    await this.RefreshTokenModel.updateOne(
       {
         userId,
       },
@@ -86,6 +89,5 @@ export class AuthService {
         upsert: true,
       },
     );
-    console.log('x:', x);
   }
 }

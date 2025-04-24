@@ -8,11 +8,28 @@ import { CustomLogger } from './common/logger/custom-logger.service';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpErrorFilter } from './common/filters.ts/http-exception.filter';
 import { UserModule } from './user/user.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import {
+  DATABASE_URI_KEY,
+  JWT_SECRET_KEY,
+} from './common/constants/app.constant';
 
 @Module({
   imports: [
-    JwtModule.register({ global: true, secret: '123' }),
-    MongooseModule.forRoot('mongodb://localhost:27017/egdb'),
+    ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.registerAsync({
+      global: true,
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>(JWT_SECRET_KEY),
+      }),
+    }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>(DATABASE_URI_KEY),
+      }),
+    }),
     AuthModule,
     UserModule,
   ],

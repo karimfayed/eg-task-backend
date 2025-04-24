@@ -4,9 +4,10 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
-import { HttpResponse } from '../interfaces/api-response.interface.ts';
+import { HttpResponse } from '../interfaces/http-response.interface.ts.js';
 import { CustomLogger } from '../logger/custom-logger.service.js';
-import { LoggerDto } from '../dtos/logger.dto.js';
+import { logErrorDto } from '../dtos/logger.dto.js';
+import { LoggerContext } from '../enums/logger-context.enum.js';
 
 @Catch(HttpException)
 export class HttpErrorFilter implements ExceptionFilter {
@@ -29,15 +30,15 @@ export class HttpErrorFilter implements ExceptionFilter {
       },
     };
 
-    const lodData: LoggerDto = {
-      context: 'Filter',
+    const logData: logErrorDto = {
+      context: LoggerContext.FILTER,
       error: message,
       method: req.method,
       statusCode: status,
       url: req.originalUrl,
     };
 
-    this.logger.logError(lodData);
+    this.logger.logError(logData);
 
     return response.status(status).json(httpResponse);
   }

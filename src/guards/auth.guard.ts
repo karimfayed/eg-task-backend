@@ -7,6 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
+import { RequestDto } from 'src/auth/dtos/request.dto';
+import { ErrorMessages } from 'src/common/enums/error-messages.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,15 +16,15 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest(); // TODO: Create Request interface
+    const request: RequestDto = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    if (!token) throw new UnauthorizedException('Invalid Token');
+    if (!token) throw new UnauthorizedException(ErrorMessages.INVALID_TOKEN);
 
     try {
       const payload = this.jwtService.verify(token);
       request.userId = payload.userId;
     } catch (error) {
-      throw new UnauthorizedException('Invalid Token');
+      throw new UnauthorizedException(ErrorMessages.INVALID_TOKEN);
     }
     return true;
   }

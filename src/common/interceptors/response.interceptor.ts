@@ -8,14 +8,14 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { HttpResponse } from '../interfaces/api-response.interface.ts';
+import { HttpResponse } from '../interfaces/http-response.interface.ts.js';
 import { STATUS_CODES } from 'http';
 import { CustomLogger } from '../logger/custom-logger.service.js';
-import { LoggerDto } from '../dtos/logger.dto.js';
+import { CustomLoggerDto, logRequestDto } from '../dtos/logger.dto.js';
+import { LoggerContext } from '../enums/logger-context.enum.js';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
-  // private readonly logger = new Logger(ResponseInterceptor.name);
   constructor(private readonly logger: CustomLogger) {}
 
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
@@ -32,8 +32,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
 
         const duration = Date.now() - start;
 
-        const logData: LoggerDto = {
-          context: 'Interceptor',
+        const logData: logRequestDto = {
+          context: LoggerContext.INTERCEPTOR,
           method,
           url,
           statusCode,
