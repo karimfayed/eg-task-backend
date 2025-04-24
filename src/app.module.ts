@@ -7,12 +7,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { CustomLogger } from './common/logger/custom-logger.service';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpErrorFilter } from './common/filters.ts/http-exception.filter';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     JwtModule.register({ global: true, secret: '123' }),
     MongooseModule.forRoot('mongodb://localhost:27017/egdb'),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [CustomLogger, ResponseInterceptor, HttpErrorFilter, AppService],
