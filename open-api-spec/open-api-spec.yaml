@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  title: EG API
+  description: API endpoints from EG-Endpoints collection
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /auth/signup:
+    post:
+      summary: User signup
+      description: Create a new user account
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: "Karim"
+                email:
+                  type: string
+                  format: email
+                  example: "karim@gmail.com"
+                password:
+                  type: string
+                  format: password
+                  example: "Karim123"
+      responses:
+        '200':
+          description: Successful signup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  refreshToken:
+                    type: string
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticate an existing user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "karim@gmail.com"
+                password:
+                  type: string
+                  format: password
+                  example: "Karim123"
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+  /auth/refresh:
+    post:
+      summary: Refresh authentication token
+      description: Get a new access token using a refresh token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  example: "5fee1ae2-ca40-4de7-b375-e6b07c72faf0"
+      responses:
+        '200':
+          description: Successful token refresh
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+        '401':
+          description: Invalid refresh token
+        '500':
+          description: Server error
+
+  /:
+    get:
+      summary: Hello World
+      description: A simple endpoint that returns a greeting
+      tags:
+        - General
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello World!"
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+  /profile:
+    get:
+      summary: User profile
+      description: Get the current user's profile information
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
