@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
+import { CustomLogger } from './common/logger/custom-logger.service';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { HttpErrorFilter } from './common/filters.ts/http-exception.filter';
 
 @Module({
   imports: [
@@ -12,6 +15,6 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [CustomLogger, ResponseInterceptor, HttpErrorFilter, AppService],
 })
 export class AppModule {}
