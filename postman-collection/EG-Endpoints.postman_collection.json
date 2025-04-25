@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Karim\",\r\n    \"email\": \"karim@gmail.com\",\r\n    \"password\": \"Karim123\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Karim\",\r\n    \"email\": \"karim@gmail.com\",\r\n    \"password\": \"karim@123\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -42,7 +42,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"karim@gmail.com\",\r\n    \"password\": \"Karim123\"\r\n}",
+					"raw": "{\r\n    \"email\": \"karim@gmail.com\",\r\n    \"password\": \"karim@123\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -71,7 +71,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"refreshToken\":\"5fee1ae2-ca40-4de7-b375-e6b07c72faf0\"\r\n}",
+					"raw": "{\r\n    \"refreshToken\":\"d84785d0-664b-457e-9fd3-a9ea24124009\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -97,14 +97,7 @@
 			"name": "HelloWorld",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODA5MzllMGEyZTA1ODZiOGVmMGVmYTYiLCJpYXQiOjE3NDU0NDcwMzgsImV4cCI6MTc0NTQ0NzA0OH0.H4TgFEh7GVAoOw4lF2Ruu0-ei9yIYaQo1UDY01bCR0I",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "GET",
 				"header": [],
@@ -127,7 +120,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODA5MzllMGEyZTA1ODZiOGVmMGVmYTYiLCJpYXQiOjE3NDU0NDcwMzgsImV4cCI6MTc0NTQ0NzA0OH0.H4TgFEh7GVAoOw4lF2Ruu0-ei9yIYaQo1UDY01bCR0I",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODBhOGRmMGM2NGUxNDhlMTg1NDUzYjIiLCJpYXQiOjE3NDU1MjIyMjYsImV4cCI6MTc0NTUyMjI1Nn0.4kNamht2aFpVPnzW-LK1xkJgGlIw_Rfwht8iz8C0iAo",
 							"type": "string"
 						}
 					]
@@ -135,12 +128,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000",
+					"raw": "http://localhost:3000/user/profile",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "3000"
+					"port": "3000",
+					"path": [
+						"user",
+						"profile"
+					]
 				}
 			},
 			"response": []
