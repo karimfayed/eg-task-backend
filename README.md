@@ -1,4 +1,4 @@
-# eg-tas-backend
+# eg-task-backend
 
 This is a backend application built with **NestJS**.
 
