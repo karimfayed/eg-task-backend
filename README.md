@@ -14,7 +14,7 @@ git clone <repository-url>
 ### 2. Install Dependencies
 Navigate into the project folder and install the required dependencies:
 ```
-cd eg-tas-backend
+cd eg-task-backend
 npm install
 ```
 ### 3. Create a .env file
