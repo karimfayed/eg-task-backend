@@ -8,6 +8,6 @@ export class UserService {
   constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
   async getProfile(userId: string) {
     const user = await this.UserModel.findById(userId);
-    return user;
+    return { user: user };
   }
 }

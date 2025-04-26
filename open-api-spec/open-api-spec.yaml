@@ -17,11 +17,11 @@ paths:
       operationId: helloWorld
       responses:
         '200':
-          description: Successful operation
+          description: User profile retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelloWorldResponse'
+                $ref: '#/components/schemas/HttpResponseHelloWorld'
 
   /auth/signup:
     post:
@@ -35,20 +35,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignupRequest'
+              $ref: '#/components/schemas/SignupDto'
       responses:
         '201':
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/HttpResponseProfile'
         '400':
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/HttpResponseError'
 
   /auth/login:
     post:
@@ -62,20 +62,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/LoginDto'
       responses:
         '200':
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/HttpResponseAuth'
         '401':
           description: Invalid credentials
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/HttpResponseError'
 
   /auth/refresh:
     post:
@@ -89,20 +89,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
+              $ref: '#/components/schemas/RefreshTokenDto'
       responses:
         '200':
           description: Token refreshed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/HttpResponseAuth'
         '401':
           description: Invalid refresh token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/HttpResponseError'
 
   /user/profile:
     get:
@@ -119,17 +119,125 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileResponse'
+                $ref: '#/components/schemas/HttpResponseProfile'
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/HttpResponseError'
 
 components:
   schemas:
-    SignupRequest:
+    # Base response structures
+    HttpResponse:
+      type: object
+      required:
+        - statusCode
+        - body
+      properties:
+        statusCode:
+          type: number
+          description: HTTP status code of the response
+        body:
+          $ref: '#/components/schemas/HttpResponseBody'
+      description: Base response structure for all API endpoints
+
+    HttpResponseBody:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Response message describing the result
+        result:
+          type: object
+          nullable: true
+          description: Optional result data (null for error responses)
+      description: Base response body structure for all API endpoints
+
+    # Specific response types
+    HttpResponseHelloWorld:
+      allOf:
+        - $ref: '#/components/schemas/HttpResponse'
+        - type: object
+          properties:
+            statusCode:
+              example: 200
+            body:
+              type: object
+              properties:
+                message:
+                  example: "API is running correctly"
+                result:
+                  $ref: '#/components/schemas/HelloWorldResponse'
+      description: Response for the hello world endpoint
+
+    HttpResponseAuth:
+      allOf:
+        - $ref: '#/components/schemas/HttpResponse'
+        - type: object
+          properties:
+            statusCode:
+              example: 200
+            body:
+              type: object
+              properties:
+                message:
+                  example: "Authentication successful"
+                result:
+                  $ref: '#/components/schemas/AuthResponse'
+      description: Response for authentication endpoints (login, refresh token)
+
+    HttpResponseSignup:
+      allOf:
+        - $ref: '#/components/schemas/HttpResponse'
+        - type: object
+          properties:
+            statusCode:
+              example: 201
+            body:
+              type: object
+              properties:
+                message:
+                  example: "User registered successfully"
+                result:
+                  $ref: '#/components/schemas/AuthResponse'
+      description: Response for user registration endpoint
+
+    HttpResponseProfile:
+      allOf:
+        - $ref: '#/components/schemas/HttpResponse'
+        - type: object
+          properties:
+            statusCode:
+              example: 200
+            body:
+              type: object
+              properties:
+                message:
+                  example: "Profile retrieved successfully"
+                result:
+                  $ref: '#/components/schemas/ProfileResponse'
+      description: Response for user profile endpoint
+
+    HttpResponseError:
+      allOf:
+        - $ref: '#/components/schemas/HttpResponse'
+        - type: object
+          properties:
+            statusCode:
+              example: 400
+            body:
+              type: object
+              properties:
+                message:
+                  example: "Request validation failed"
+      description: Response for error scenarios (no result field)
+
+    # Request schemas
+    SignupDto:
       type: object
       required:
         - name
@@ -153,8 +261,9 @@ components:
           pattern: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$
           example: karim@123
           description: Password (minimum 8 characters, at least 1 letter, 1 number, and 1 special character)
+      description: Request payload for user registration
     
-    LoginRequest:
+    LoginDto:
       type: object
       required:
         - email
@@ -170,8 +279,9 @@ components:
           format: password
           example: karim@123
           description: User's password
+      description: Request payload for user authentication
     
-    RefreshTokenRequest:
+    RefreshTokenDto:
       type: object
       required:
         - refreshToken
@@ -180,64 +290,78 @@ components:
           type: string
           example: d84785d0-664b-457e-9fd3-a9ea24124009
           description: Refresh token to generate a new access token
+      description: Request payload for refreshing the access token
     
+    # Response data schemas
     AuthResponse:
       type: object
+      required:
+        - accessToken
+        - refreshToken
+        - user
       properties:
         accessToken:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          description: JWT token for authentication
         refreshToken:
           type: string
           example: d84785d0-664b-457e-9fd3-a9ea24124009
-        user:
-          $ref: '#/components/schemas/User'
+          description: Token used to get a new access token when it expires
+      description: Authentication response data including tokens
     
     User:
       type: object
+      required:
+        - _id
+        - name
+        - email
+        - password
       properties:
-        id:
+        _id:
           type: string
           example: 680a8df0c64e148e185453b2
+          description: MongoDB document ID
         name:
           type: string
           example: Karim
+          description: User's full name
         email:
           type: string
           format: email
           example: karim@gmail.com
-        createdAt:
+          description: User's email address (unique)
+        password:
           type: string
-          format: date-time
+          description: Hashed user password (bcrypt)
+          example: $2b$10$X7EiYxHNCuD7QTJLIUlCB.qjwEWp3V7UvUZKpMW9D5dVZxqpJ03lS
+      description: Complete user model including sensitive data (internal use only)
+    
     
     ProfileResponse:
       type: object
+      required:
+        - user
       properties:
         user:
           $ref: '#/components/schemas/User'
+      description: User profile response data
     
     HelloWorldResponse:
       type: object
+      required:
+        - message
       properties:
         message:
           type: string
           example: Hello, World!
+          description: Simple greeting message
+      description: Simple response to verify API is functioning
     
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Invalid credentials
-        message:
-          type: string
-          example: The provided email or password is incorrect
-        statusCode:
-          type: integer
-          example: 401
-
+  # Security schemas
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: JWT token authentication using the Authorization header with Bearer scheme

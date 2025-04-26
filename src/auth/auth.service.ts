@@ -37,7 +37,7 @@ export class AuthService {
       email: signupData.email,
       password: hashedPassword,
     });
-    return createdUser;
+    return { user: createdUser };
   }
 
   async login(creds: LoginDto) {
