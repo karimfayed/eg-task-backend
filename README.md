@@ -31,6 +31,13 @@ npm run start
 ```
 The API will be available at http://localhost:3000.
 
+### Unit Tests
+To demonstrate only unit test cases have been created for `auth.controller.ts` in `auth.controller.spec.ts`
+To run the unit tests for this file, run:
+```
+npm run test:auth
+```
+
 ### Postman Collection
 Import the EG-Endpoints.postman_collection.json from the postman-collection folder into Postman to hit the API endpoints with example values.
 

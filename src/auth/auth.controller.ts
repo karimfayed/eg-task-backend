@@ -10,7 +10,7 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() signupData: SignupDto) {
-    return this.authService.signUp(signupData);
+    return this.authService.signup(signupData);
   }
 
   @Post('login')

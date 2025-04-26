@@ -22,7 +22,7 @@ export class AuthService {
     private RefreshTokenModel: Model<RefreshToken>,
     private jwtService: JwtService,
   ) {}
-  async signUp(signupData: SignupDto) {
+  async signup(signupData: SignupDto) {
     const isEmailExists = await this.UserModel.findOne({
       email: signupData.email,
     });
