@@ -1,6 +1,6 @@
 # eg-task-backend
 
-This is a backend application built with **NestJS**.
+This is a backend application built with **NestJS** and is using a **local** databse connection (make sure to install mongoDb).
 
 ## Setup and Installation
 
